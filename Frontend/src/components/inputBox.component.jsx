@@ -1,32 +1,24 @@
-import React from 'react'
-import { CiUser } from "react-icons/ci";
-import { MdEmail } from "react-icons/md";
-import { IoKeyOutline } from "react-icons/io5";
+import React from 'react'; 
 
-const InputBox = (name,type,placeholder,value,id,icons) => {
+const InputBox = ({ name, type, placeholder, value, id, icons, onChange }) => {
   return (
-    <div className='relative w-[100%] mb-4 flex items-center justify-center'>
-        <input
-            type={type}
-            name={name}
-            id={id}
-            placeholder={placeholder}
-            value={value}
-            className='w-[400px]  rounded-md p-4 bg-grey pl-12 border border-grey focus:bg-transparent placeholder:text-black'
-        />
-        {type === "email" ? (
-            <MdEmail className=' absolute left-25 text-3xl top-1/2 -translate-y-1/2 '/>
-        ) : type === "password" ? (
-            <IoKeyOutline className =" absolute left-25 text-3xl top-1/2 -translate-y-1/2"/>
-        ) : (
-            <CiUser className='absolute top-1/2 -translate-y-1/2 text-2xl text-gray-600  md:left-[150px] sm:left-[100px] left-[18px] lg:left-[510px]' />
-        )}
-    
-        {/* <CiUser className=' absolute left-25 text-3xl top-1/2 -translate-y-1/2' />
-        <MdEmail className=' absolute left-25 text-3xl top-1/2 -translate-y-1/2 '/>
-        <IoKeyOutline className =" absolute left-25 text-3xl top-1/2 -translate-y-1/2"/> */}
-    </div>
-  )
-}
+    <div className="relative w-full mb-4 flex items-center justify-center">
+      <input
+        type={type}
+        name={name}
+        id={id}
+        placeholder={placeholder}
+        value={value}
+        onChange={onChange} 
+        className="w-[400px] rounded-md p-4 pl-[52px] bg-gray-100 border border-gray-300 focus:bg-transparent placeholder:text-black"
+        required
+      />
 
-export default InputBox
+      <span className="absolute top-1/2 -translate-y-1/2 text-2xl text-gray-600 left-[18px] sm:left-[100px] md:left-[150px] lg:left-[510px]">
+        {icons}
+      </span>
+    </div>
+  );
+};
+
+export default InputBox;

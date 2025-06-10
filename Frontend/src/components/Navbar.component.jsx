@@ -11,11 +11,11 @@ function Navbar() {
     <nav className="w-full flex items-center h-[70px] border-b-2 border-gray-50  gap-4 ">
         <Link to="/" className=" p-6 mr-6 text-2xl font-bold text" >BLOG.</Link>
 
-        <div className= {`absolute w-full left-0 top-15 mt-0 border-b border-gray-50 py-4 px-[5vw] md:border-0 md:block md:relative md:inset-0 md:p-0 md:w-auto md:opacity-100 pointer-events-auto ${searchBox ? " opacity-100 pointer-events-auto" : "opacity-0 pointer-events-none duration-100" }`}>
+        <div className= {`absolute w-full left-0 top-15 mt-0 border-b border-gray-50 cursor-pointer py-4 px-[5vw] md:border-0 md:block md:relative md:inset-0 md:p-0 md:w-auto md:opacity-100 ${searchBox ? " opacity-100" : "opacity-0  duration-100" }`}>
             <input
                 type="text" 
                 placeholder="Search"
-                className="w-full md:w-auto cursor-pointer bg-gray-100 p-3 pl-6 pr[12%] md:pr-6 rounded-full placeholder:text-gray-700 md:pl-14 "
+                className="w-full md:w-auto bg-gray-100 p-3 pl-6 pr[12%] md:pr-6 rounded-full placeholder:text-gray-700 cursor-pointer md:pl-14 "
             />
             <FiSearch className="absolute right-[50px] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 cursor-pointer text-xl"/>
         </div>

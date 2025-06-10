@@ -3,7 +3,7 @@ import mongoose from 'mongoose';
 const { Schema } = mongoose;
 
 
-const profile_imgs_collections_list = ['bottts', 'adventurer', 'avataaars']; 
+const profile_imgs_collections_list = ['bottts']; 
 const profile_imgs_name_list = ['ankit', 'john', 'jane']; 
 
 const userSchema = new Schema(
