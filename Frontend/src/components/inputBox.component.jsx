@@ -14,7 +14,7 @@ const InputBox = ({ name, type, placeholder, value, id, icons, onChange }) => {
         required
       />
 
-      <span className="absolute top-1/2 -translate-y-1/2 text-2xl text-gray-600 left-[18px] sm:left-[100px] md:left-[150px] lg:left-[510px]">
+      <span className="absolute top-1/2 -translate-y-1/2 text-2xl text-gray-600 left-[18px] sm:hidden md:hidden">
         {icons}
       </span>
     </div>

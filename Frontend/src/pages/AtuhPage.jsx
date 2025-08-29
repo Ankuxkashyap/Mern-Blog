@@ -3,27 +3,11 @@ import { Link, Outlet } from "react-router-dom";
 import { CiUser } from "react-icons/ci";
 import { MdOutlineMail } from "react-icons/md";
 import { IoKeyOutline } from "react-icons/io5";
-import axios from "axios";
 import InputBox from "../components/inputBox.component";
-import useAuthStore from "../store/auth";
-import { shallow } from "zustand/shallow";
-import { useEffect } from "react";
+import { useAuthStore } from "../store/auth";
 
 function AuthPage({ type }) {
-
-  const { setUser, isAuthenticated, user } = useAuthStore(
-  (state) => ({
-    setUser: state.setUser,
-    isAuthenticated: state.isAuthenticated,
-    user: state.user,
-  }),
-  shallow
-);
-
- useEffect(() => {
-    console.log("User:", user);
-    console.log("Authenticated:", isAuthenticated);
-  }, [user, isAuthenticated]);
+  const { login, register } = useAuthStore();
 
   const [formData, setFormData] = useState({
     fullName: "",
@@ -41,33 +25,32 @@ function AuthPage({ type }) {
   const handleSubmit = async (e) => {
     e.preventDefault();
 
-    const url =
-      type === "Sign-Up"
-        ? "http://localhost:3000/api/users/"
-        : "http://localhost:3000/api/users/login";
+    let result;
 
-    try {
-      const { data } = await axios.post(url, formData, {
-        withCredentials: true,
-        headers: {
-          "Content-Type": "application/json"
-        }
+    if (type === "Sign-Up") {
+      result = await register({
+        fullName: formData.fullName,
+        email: formData.email,
+        password: formData.password
       });
+    } else {
+      result = await login({
+        email: formData.email,
+        password: formData.password
+      });
+    }
 
-      console.log("Response Data:", data);
-      setUser(data);
-    } catch (error) {
-      console.error("Error:", error.response?.data?.message || error.message);
+    if (result.success) {
+      // console.log("Auth success:", result);
+    } else {
+      console.error("Auth failed:", result.message);
     }
   };
 
   return (
     <>
       <section className="min-h-[calc(100vh-80px)] flex items-center justify-center">
-        <form
-          className="w-[80%] max-h-[400px]"
-          onSubmit={handleSubmit}
-        >
+        <form className="w-[80%] max-h-[400px]" onSubmit={handleSubmit}>
           <h1 className="text-4xl font-gelasio capitalize text-center mb-24">
             {type === "Sign-In" ? "Welcome Back" : "Join Us Today"}
           </h1>

@@ -1,0 +1,37 @@
+
+.ce-header {
+  font-size: 24px;
+  font-weight: 500;
+  margin: 1rem 0;
+}
+
+.ce-header.ce-header-3 {
+  font-size: 20px;
+  font-weight: 400;
+  margin: 0.75rem 0;
+}
+
+.ce-header.ce-header-4 {
+  font-size: 18px;
+  font-weight: 300;
+  margin: 0.5rem 0;
+}
+
+.ce-paragraph {
+  font-size: 1rem;
+  line-height: 1.6;
+  color: #333;
+}
+
+.ce-quote {
+  border-left: 4px solid #9ca3af; /* gray-400 */
+  padding-left: 1rem;
+  font-style: italic;
+  color: #555;
+}
+
+.ce-list {
+  list-style-type: disc;
+  padding-left: 1.5rem;
+  font-size: 1rem;
+}

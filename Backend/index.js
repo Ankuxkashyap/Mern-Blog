@@ -1,6 +1,7 @@
 import express from 'express';
 import connectDb from './config/db.js';;
 import userRoute from './routes/user.route.js';
+import blogRoute from './routes/blog.route.js'
 import bodyParser from 'body-parser';
 import cookieParser from 'cookie-parser';
 import cors from 'cors';
@@ -30,7 +31,7 @@ app.get('/', (req, res) => {
 });
 
 app.use('/api/users', userRoute);
-
+app.use('/api/blog', blogRoute)
 
 
 app.listen(PORT, () => {
