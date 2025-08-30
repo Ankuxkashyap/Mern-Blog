@@ -7,7 +7,8 @@ import toast from 'react-hot-toast';
 
 export const PreviewBlog = () => {
   const navigate = useNavigate();
-  const { banner, title, dis, setDis, setTitle, tags, setTag } = useBlogStore();
+
+  const { banner, title, dis, setDis, setTitle, tags, setTag ,publish,resetBlog,saveDraft} = useBlogStore();
   const [inputValue, setInputValue] = useState("");
   const maxlength = 200;
   const maxTaglimit = 5;
@@ -17,6 +18,39 @@ export const PreviewBlog = () => {
 
 const handleRemoveTag = (tagToRemove) => {
   setTag(tags.filter((tag) => tag !== tagToRemove));
+};
+
+const handelPublish = async () => {
+  try {
+    const result = await publish();
+
+    if (result.success) {
+      toast.success(result?.message || "Publish successful!");
+      navigate('/');
+      resetBlog();
+    } else {
+      toast.error(result.message || "Failed to publish");
+    }
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    toast.error("Something went wrong while publishing.");
+  }
+};
+const handelSaveDraft = async () => {
+  try {
+    const result = await saveDraft();
+
+    if (result.success) {
+      toast.success(result?.message || "Publish successful!");
+      navigate('/');
+      resetBlog();
+    } else {
+      toast.error(result.message || "Failed to publish");
+    }
+  } catch (err) {
+    console.error("Unexpected error:", err);
+    toast.error("Something went wrong while publishing.");
+  }
 };
 
 
@@ -115,10 +149,17 @@ const handleTagKeyDown = (e) => {
       </section>
 
       <button
-        className="mt-5 absolute left-[40vw] md:left-[53vw] whitespace-nowrap bg-black text-white rounded-full px-3 py-1 md:mr-5 text-lg items-center gap-2 ml-2 cursor-pointer"
+       onClick={handelPublish}
+       className="mt-5 absolute left-[20vw] md:left-[53vw] whitespace-nowrap bg-black text-white rounded-full px-3 py-1 md:mr-5 text-lg items-center gap-2 ml-2 cursor-pointer"
       >
         Publish
       </button>
+
+       <button 
+       onClick={handelSaveDraft}
+       className=" mt-5 absolute left-[45vw] md:left-[60vw] whitespace-nowrap bg-gray-200 text-black rounded-full px-3 py-1 md:mr-5 text-lg items-center gap-2 ml-2 cursor-pointer">
+            Save Draft
+        </button>
     </>
   );
 };

@@ -5,10 +5,11 @@ import { MdOutlineMail } from "react-icons/md";
 import { IoKeyOutline } from "react-icons/io5";
 import InputBox from "../components/inputBox.component";
 import { useAuthStore } from "../store/auth";
+import { useNavigate } from "react-router-dom";
 
 function AuthPage({ type }) {
   const { login, register } = useAuthStore();
-
+  const navigate = useNavigate();
   const [formData, setFormData] = useState({
     fullName: "",
     email: "",
@@ -42,6 +43,7 @@ function AuthPage({ type }) {
 
     if (result.success) {
       // console.log("Auth success:", result);
+      navigate('/')
     } else {
       console.error("Auth failed:", result.message);
     }

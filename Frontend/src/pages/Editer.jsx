@@ -148,9 +148,9 @@ const Editer = () => {
           >
             Publish
           </button>
-          <button className="whitespace-nowrap bg-gray-200 text-black rounded-full px-3 py-1 md:mr-5 text-lg items-center gap-2 ml-2 cursor-pointer">
+          {/* <button className="whitespace-nowrap bg-gray-200 text-black rounded-full px-3 py-1 md:mr-5 text-lg items-center gap-2 ml-2 cursor-pointer">
             Save Draft
-          </button>
+          </button> */}
         </div>
       </nav>
 
@@ -159,7 +159,7 @@ const Editer = () => {
           <div className="mx-auto max-w-[900px] w-full mt-5">
             <div className="relative aspect-video hover:opacity-80 bg-white border-4 border-gray-200">
               <label htmlFor="uploadBanner">
-                <img src={banner} alt="banner" className="z-20" />
+                <img src={banner || null} alt="banner" className="z-20" />
                 <input
                   type="file"
                   hidden
