@@ -1,5 +1,5 @@
 import mongoose, { Schema } from "mongoose";
-
+import User from "./User.model.js";
 const blogSchema = mongoose.Schema({
 
     blog_id: {
@@ -15,10 +15,10 @@ const blogSchema = mongoose.Schema({
         type: String,
         // required: true,
     },
-    des: {
+    dis: {
         type: String,
         maxlength: 200,
-        // required: true
+        required: true
     },
     content: {
         type: [],
@@ -31,7 +31,7 @@ const blogSchema = mongoose.Schema({
     author: {
         type: Schema.Types.ObjectId,
         required: true,
-        ref: 'users'
+        ref: 'User'
     },
     activity: {
         total_likes: {

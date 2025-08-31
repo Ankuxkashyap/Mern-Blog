@@ -29,7 +29,7 @@ export const useBlogStore = create((set, get) => ({
 
   publish: async () => {
     const { banner, title, content, dis, tags } = get();
-
+    console.log("dis form frontend ",dis)
     try {
       const res = await axios.post('/blog/publish-blog', {
         banner,

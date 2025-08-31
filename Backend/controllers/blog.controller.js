@@ -62,12 +62,15 @@ export const publishBlog = async(req,res)=>{
 export const saveDraft = async(req,res)=>{
       const {banner,title,dis,content,tags} = req.body
       const userId = req.user?.id;
-
+      console.log(req.body);
        try{
-            if (!title || !content || content.length === 0) {
+            if (!title || !content || !dis || content.length === 0) {
           return res.status(400).json({ success: false, message: "Title and content are required" });
         }
 
+        if(!dis){
+          return res.status(400).json({ success: false, message: "desctipction are required" });
+        }
       
         const newBlog = new Blogs({
           blog_id: uuidv4(),
@@ -93,5 +96,60 @@ export const saveDraft = async(req,res)=>{
         res.status(500).json({ success: false, error: err.message });
       }
 }
+
+export const getBlog = async (req, res) => {
+  const maxLimit = 5;
+
+  try {
+    const blogs = await Blogs.find({ draft: false })
+      .populate("author", "personalInfo.profile_img personalInfo.username personalInfo.fullName -_id")
+      .sort({ publishedAt: -1 })
+      .select("blog_id title dis banner activity tags publishedAt -_id")
+      .limit(maxLimit);
+
+    if (!blogs || blogs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No blogs found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Blogs fetched successfully",
+      blogs,
+    });
+  } catch (err) {
+    console.log("Error while fetching blogs:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+export const getTrendingBlogs = async(req,res)=>{
+  const maxLimit = 5
+  try {
+    const blogs = await Blogs.find({ draft: false })
+      .populate("author", "personalInfo.profile_img personalInfo.username personalInfo.fullName -_id")
+      .sort({"activity.total_reads":-1,"activity.total_likes":-1,"publishedAt": -1})
+      .select("blog_id title publishedAt -_id")
+      .limit(maxLimit);
+
+    if (!blogs || blogs.length === 0) {
+      return res.status(404).json({
+        success: false,
+        message: "No blogs found",
+      });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Treanding Blogs fetched successfully",
+      blogs,
+    });
+  } catch (err) {
+    console.log("Error while fetching tranding blogs:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
 
  
