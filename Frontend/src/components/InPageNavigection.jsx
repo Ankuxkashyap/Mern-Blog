@@ -1,6 +1,6 @@
 import { useState ,useRef, useEffect, Children  } from "react"
 
-export const InPageNavigection = ( {routes = [] ,defaultHidden = [],defaultIndex = 0, children})=>{
+export const InPageNavigection = ( {routes = [] ,defaultIndex = 0, children})=>{
 
     const [isActive,setIsActive] = useState(defaultIndex);
     const activeLine = useRef();
@@ -29,7 +29,7 @@ export const InPageNavigection = ( {routes = [] ,defaultHidden = [],defaultIndex
                     ref={i == defaultIndex ? activeTab : null}
                     onClick={(e)=>{changePageState(e.target, i)}}
                     key={i}
-                    className={"p-4 px-5 capitalize " + (isActive == i  ? "text-black " : "text-gray-500 " ) + (defaultHidden.includes(route) ? "md:hidden": " ")}
+                    className={"p-4 px-5 capitalize " + (isActive == i  ? "text-black " : "text-gray-500  md:hidden")}
                 >
                 {route}
                 </button>
