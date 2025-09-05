@@ -9,9 +9,12 @@ import  { Toaster } from 'react-hot-toast';
 import Editer from './pages/Editer';
 import { PreviewBlog } from './components/previewBlog.component';
 import { HomePage } from './pages/HomePage';
+import { SerchPage } from "./pages/SerchPage"
+import { BsTypeH1 } from 'react-icons/bs';
+import { PageNotFound } from './pages/PageNotFound';
+import { ProfilePage } from './pages/ProfilePage';
 
 function App() {
-  const [count, setCount] = useState(0);
 
   return (
     <>
@@ -21,6 +24,9 @@ function App() {
         <Route index element={<HomePage/>}/>
         <Route path="singin" element={<AuthPage type="Sign-In" />} />
         <Route path="singup" element={<AuthPage type="Sign-Up" />} />
+        <Route path="/serch/:query" element={<SerchPage/>}/>
+        <Route path='/user/:id' element={<ProfilePage/>}/>
+        <Route path='*' element={<PageNotFound/>}/>
       </Route>
       <Route path="/editer" element={<Editer/>}/>
       <Route path='/preview' element = {<PreviewBlog/>}/>

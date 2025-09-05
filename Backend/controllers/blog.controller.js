@@ -99,12 +99,14 @@ export const saveDraft = async(req,res)=>{
 
 export const getBlog = async (req, res) => {
   const maxLimit = 5;
-
+  const {page} = req.body;
+  // console.log(page)
   try {
     const blogs = await Blogs.find({ draft: false })
       .populate("author", "personalInfo.profile_img personalInfo.username personalInfo.fullName -_id")
       .sort({ publishedAt: -1 })
       .select("blog_id title dis banner activity tags publishedAt -_id")
+      .skip((page-1) * maxLimit)
       .limit(maxLimit);
 
     if (!blogs || blogs.length === 0) {
@@ -151,5 +153,71 @@ export const getTrendingBlogs = async(req,res)=>{
     res.status(500).json({ success: false, error: err.message });
   }
 };
+export const getBlogsbyCategory  = async(req,res) =>{
+    const  {tag}  = req.body;
+  
+    try {
+        const blogs = await Blogs.find({ tags:tag,draft: false })
+          .populate("author", "personalInfo.profile_img personalInfo.username personalInfo.fullName -_id")
+          .sort({ publishedAt: -1 })
+          .select("blog_id title dis banner activity tags publishedAt -_id")
+
+        if (!blogs || blogs.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "No blogs found",
+          });
+        }
+
+        res.status(200).json({
+          success: true,
+          message: "Blogs fetched successfully",
+          blogs,
+        });
+      } catch (err) {
+        console.log("Error while fetching blogs:", err);
+        res.status(500).json({ success: false, error: err.message });
+      }
+}
+
+export const getBlogBySearch = async (req, res) => {
+  const { tag, query ,author} = req.body;
+  // console.log(tag,query);
+  try {
+    let findQuery = { draft: false };
+
+    if (tag) {
+      findQuery.tags = tag; 
+    }
+    if (query) {
+      findQuery.title = new RegExp(query, "i");
+    }
+    if(author){
+      findQuery.author = author;
+    }
+
+    const blogs = await Blogs.find(findQuery)
+      .populate("author", "personalInfo.profile_img personalInfo.username personalInfo.fullName -_id")
+      .sort({ publishedAt: -1 })
+      .select("blog_id title dis banner activity tags publishedAt -_id");
+
+    if (!blogs || blogs.length === 0) {
+          return res.status(404).json({
+            success: false,
+            message: "No blogs found",
+        });
+    }
+
+    res.status(200).json({
+      success: true,
+      message: "Blogs fetched successfully",
+      blogs,
+    });
+  } catch (err) {
+    console.error("Error while fetching blogs by search:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
 
  

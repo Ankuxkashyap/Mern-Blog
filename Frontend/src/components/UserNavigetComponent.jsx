@@ -11,11 +11,11 @@ export const UserNavigetComponent = () => {
     <>
     
     <motion.div 
-        initial={{ opacity: 0, y: -10 }}
+            initial={{ opacity: 0, y: -10 }}
             animate={{ opacity: 1, y: 0 }}
             exit={{ opacity: 0, y: -10 }}
             transition={{ duration: 0.2 }}
-     className= 'absolute top-8 right-10 bg-white rounded-lg z-1 shadow-lg flex items-center flex-col w-35'>
+     className= 'absolute top-8 right-10 bg-white rounded-lg z-1 shadow-lg flex items-center flex-col w-40'>
         <Link
             to="/editer"
             className="flex items-center w-full p-2 gap-2 text-gray-500 hover:bg-gray-100 rounded border-b border-gray-200"
@@ -26,7 +26,7 @@ export const UserNavigetComponent = () => {
 
         
         <Link 
-            to= {`users/${user?.username}`}
+            to= {`user/${user?.username}`}
             className="flex items-center w-full p-2 gap-2 text-gray-500 hover:bg-gray-100  rounded border-b border-gray-200"
             >
                 Profile

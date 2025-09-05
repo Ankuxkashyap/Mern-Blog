@@ -9,7 +9,7 @@ export const BLogPostCard = ({ content, author }) => {
   return (
     <Link 
       to={`/blog/${id}`} 
-      className="lg:w-[1000px] md:w-[700px] w-full md:ml-5 flex items-start justify-between gap-4 border-b border-gray-200 pb-5 mb-4"
+      className="lg:w-[1100px] md:w-[700px] w-full md:ml-5 flex items-start justify-between gap-4 border-b border-gray-200 pb-5 mb-4"
     >
       
       <div className="flex-1 min-w-0">

@@ -5,10 +5,12 @@ import { FaRegEdit } from "react-icons/fa";
 import { useAuthStore } from "../store/auth";
 import { IoNotificationsOutline } from "react-icons/io5";
 import { UserNavigetComponent } from "../components/UserNavigetComponent";
+import { useNavigate } from "react-router-dom";
 
 function Navbar() {
 
     const [searchBox,setSearchBox] = useState(false);
+    const navigate = useNavigate() 
     const [userNevPanel,setUserNevPanel] = useState(false);
     const user = useAuthStore((state) => state.user);
     const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
@@ -18,8 +20,13 @@ function Navbar() {
             setUserNevPanel(false);
         }, 200);
     }
+    const handleSearch = (e)=>{
+        const query = e.target.value;
+        if(e.key == "Enter" && query.length){
+            navigate(`/serch/${query}`)
+        }
+    }
 
-    // console.log(user, isAuthenticated);
 
   return (
     <>
@@ -30,6 +37,7 @@ function Navbar() {
             <input
                 type="text" 
                 placeholder="Search"
+                onKeyDown={handleSearch}
                 className="w-full md:w-auto bg-gray-100 p-3 pl-6 pr[12%] md:pr-6 rounded-full placeholder:text-gray-700 cursor-pointer md:pl-14 "
             />
             <FiSearch className="absolute right-[50px] md:pointer-events-none md:left-5 top-1/2 -translate-y-1/2 cursor-pointer text-xl"/>
@@ -86,7 +94,6 @@ function Navbar() {
                         />
                     </button>
 
-                    {/* Dropdown content appears on hover */}
                     <div >
                         {
                             userNevPanel ? <UserNavigetComponent />: null
@@ -103,7 +110,7 @@ function Navbar() {
                     md:static md:translate-y-0 md:flex md:px-4 md:py-2"
                      >
                    Sign In
-                   </Link>   
+                </Link>   
             }
     </nav>
     <Outlet />

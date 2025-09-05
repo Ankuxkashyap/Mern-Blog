@@ -13,7 +13,7 @@ export const InPageNavigection = ( {routes = [] ,defaultIndex = 0, children})=>{
         const {offsetWidth,offsetLeft} = btn;
         activeLine.current.style.width = offsetWidth + "px"
         activeLine.current.style.left = offsetLeft + "px"
-           setIsActive(i);  
+        setIsActive(i);  
     }  
 
     useEffect(()=>{

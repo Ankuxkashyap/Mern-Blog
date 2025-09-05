@@ -127,3 +127,37 @@ export const getUserProfile = async(req,res) =>{
             res.status(500).json({ message: 'Internal server error' });
         }
 }
+
+
+export const getUserBySearch = async (req, res) => {
+  const { query } = req.body;
+
+  try {
+    const users = await User.find({
+      "personalInfo.username": new RegExp(query, "i"),
+    }).select("personalInfo.username personalInfo.fullName personalInfo.profile_img -_id");
+
+    res.status(200).json({
+      success: true,
+      users,
+    });
+  } catch (err) {
+    console.error("Error in getUserBySearch:", err);
+    res.status(500).json({ success: false, message: "Internal server error" });
+  }
+};
+
+export const getProfile = async (req,res)=>{
+    const {username} = req.body;
+    try{
+        const user = await User.find({"personalInfo.username" : username})
+        .select("-personalInfo.password -updatedAt -blogs")
+        res.status(200).json({
+            success: true,
+            user,
+            });
+        } catch (err) {
+            console.error("Error in getUserBySearch:", err);
+            res.status(500).json({ success: false, message: "Internal server error" });
+        }
+}
