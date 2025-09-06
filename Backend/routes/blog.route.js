@@ -1,6 +1,6 @@
 import express from 'express'
 import uplode from '../utils/multer.js';
-import  {uplodeBanner,publishBlog, saveDraft, getBlog,getTrendingBlogs,getBlogsbyCategory,getBlogBySearch }from '../controllers/blog.controller.js'
+import  {uplodeBanner,publishBlog, saveDraft, getBlog,getTrendingBlogs,getBlogsbyCategory,getBlogBySearch, getBlogById }from '../controllers/blog.controller.js'
 import { authMiddleware } from '../middleware/auth.js'
 const router = express.Router();
 
@@ -16,5 +16,6 @@ router.post('/getBlogs',getBlog);
 router.get('/trending-blogs',getTrendingBlogs);
 router.post('/blog-category',getBlogsbyCategory);
 router.post('/blog-search',getBlogBySearch);
+router.post('/blog_id',getBlogById)
 
 export default router

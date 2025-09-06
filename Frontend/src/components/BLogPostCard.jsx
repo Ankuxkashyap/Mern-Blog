@@ -1,5 +1,5 @@
 import React from 'react'
-import { FcLike } from "react-icons/fc";
+import {FaRegHeart} from "react-icons/fa";
 import { Link } from 'react-router-dom';
 
 export const BLogPostCard = ({ content, author }) => {
@@ -33,19 +33,23 @@ export const BLogPostCard = ({ content, author }) => {
           {dis}
         </p>
 
-        <div className="flex gap-4 mt-3">
-          {tags?.length > 0 && (
-            <span className="px-2 py-1 bg-gray-200 rounded-lg text-[16px]">
-              {tags[0]}
-            </span>
-          )}
+        <div className="flex gap-2 mt-3 flex-row flex-wrap">
+          {tags?.length > 0 &&
+            tags.map((tag, i) => (
+              <span
+                key={i}
+                className="px-3 py-1 bg-gray-200 text-gray-700 rounded-full text-sm hover:bg-gray-300 transition"
+              >
+                {tag}
+              </span>
+            ))}
           <span className="flex items-center gap-1 text-sm text-gray-700">
-            <FcLike className="text-lg" /> {activity?.total_likes || 0}
+            <FaRegHeart className="text-lg" /> {activity?.total_likes || 0}
           </span>
         </div>
       </div>
 
-
+            
       <div className="w-28 h-20 md:w-32 md:h-24 flex-shrink-0">
         <img
           src={banner}

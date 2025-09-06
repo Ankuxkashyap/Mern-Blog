@@ -69,4 +69,28 @@ export const useBlogStore = create((set, get) => ({
       console.error("Error SaveDraft blog:", err.response?.data || err.message);
     }
   }
+  ,
+   fetchBlogById: async ({ blog_id }) => {
+  try {
+    const res = await axios.post("/blog/blog_id", { blog_id });
+    const blog = res.data.blog;
+
+    if (blog) {
+      set({
+        banner: blog.banner || "",
+        title: blog.title || "",
+        dis: blog.dis || "",
+        content: blog.content || { blocks: [] },
+        tags: blog.tags || [],
+        draft: blog, // if you want to keep full object
+        currentBlog: blog,
+      });
+    }
+    return blog;
+  } catch (err) {
+    console.error("Error fetching blog:", err);
+    return null;
+  }
+}
+
 }));

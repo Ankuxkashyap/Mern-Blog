@@ -13,6 +13,7 @@ import { SerchPage } from "./pages/SerchPage"
 import { BsTypeH1 } from 'react-icons/bs';
 import { PageNotFound } from './pages/PageNotFound';
 import { ProfilePage } from './pages/ProfilePage';
+import {BlogPage} from './pages/BlogPage'
 
 function App() {
 
@@ -26,9 +27,11 @@ function App() {
         <Route path="singup" element={<AuthPage type="Sign-Up" />} />
         <Route path="/serch/:query" element={<SerchPage/>}/>
         <Route path='/user/:id' element={<ProfilePage/>}/>
+        <Route path='/blog/:blog_id' element={<BlogPage/>}/>
         <Route path='*' element={<PageNotFound/>}/>
       </Route>
       <Route path="/editer" element={<Editer/>}/>
+      <Route path="/editer/:id" element={<Editer/>}/>
       <Route path='/preview' element = {<PreviewBlog/>}/>
     </Routes>
     </>

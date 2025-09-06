@@ -2,6 +2,7 @@ import cloudinary from "../config/cloudinary.js"
 import uplode from "../utils/multer.js"
 import Blogs from '../models/Blog.model.js'
 import {v4 as uuidv4} from 'uuid'
+import User from "../models/User.model.js"
 
 export const uplodeBanner = async(req,res)=>{
     try{
@@ -181,13 +182,14 @@ export const getBlogsbyCategory  = async(req,res) =>{
 }
 
 export const getBlogBySearch = async (req, res) => {
-  const { tag, query ,author} = req.body;
-  // console.log(tag,query);
+  const { tag, query ,author,eliminate_blog} = req.body;
+  // console.log(author);
   try {
     let findQuery = { draft: false };
 
     if (tag) {
       findQuery.tags = tag; 
+      findQuery.blog_id = {$ne:eliminate_blog}
     }
     if (query) {
       findQuery.title = new RegExp(query, "i");
@@ -197,7 +199,7 @@ export const getBlogBySearch = async (req, res) => {
     }
 
     const blogs = await Blogs.find(findQuery)
-      .populate("author", "personalInfo.profile_img personalInfo.username personalInfo.fullName -_id")
+      .populate("author","personalInfo.profile_img personalInfo.username personalInfo.fullName -_id")
       .sort({ publishedAt: -1 })
       .select("blog_id title dis banner activity tags publishedAt -_id");
 
@@ -215,6 +217,50 @@ export const getBlogBySearch = async (req, res) => {
     });
   } catch (err) {
     console.error("Error while fetching blogs by search:", err);
+    res.status(500).json({ success: false, error: err.message });
+  }
+};
+
+export const getBlogById = async (req, res) => {
+  const { blog_id } = req.body;
+  // console.log(blog_id)
+  const incrementVal = 1;
+
+  try {
+    
+    const blog = await Blogs.findOneAndUpdate(
+      { blog_id },
+      { $inc: { "activity.total_reads": incrementVal } },
+      { new: true }
+    )
+      .populate(
+        "author",
+        "personalInfo.profile_img personalInfo.username personalInfo.fullName -_id"
+      )
+      .select(
+        "blog_id title content dis banner activity tags blog_id publishedAt -_id"
+      );
+
+    if (!blog) {
+      return res.status(404).json({
+        success: false,
+        message: "Blog not found",
+      });
+    }
+
+    
+    await User.findOneAndUpdate(
+      { "personalInfo.username": blog.author.personalInfo.username },
+      { $inc: { "account_info.total_reads": incrementVal } }
+    );
+
+    res.status(200).json({
+      success: true,
+      message: "Blog fetched successfully",
+      blog,
+    });
+  } catch (err) {
+    console.error("Error while fetching blog:", err);
     res.status(500).json({ success: false, error: err.message });
   }
 };

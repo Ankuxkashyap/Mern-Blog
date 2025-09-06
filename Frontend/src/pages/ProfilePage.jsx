@@ -11,55 +11,74 @@ import { BLogPostCard } from "../components/BLogPostCard";
 export const ProfilePage = () => {
   const { id: username } = useParams();
   const [profile, setProfile] = useState(null);
-  const [blogs,setBlogs] = useState([])
+  const [blogs, setBlogs] = useState([]);
+  const user = useAuthStore((state) => state.user);
 
-  const user = useAuthStore((state)=>state.user)
-
+  // Fetch profile
   const fetchUser = async () => {
     try {
+      setProfile(null);
       const res = await axios.post("/users/user-profile", { username });
       if (res.data.user && res.data.user.length > 0) {
-        setProfile(res.data.user[0]); 
+        setProfile(res.data.user[0]);
       }
     } catch (err) {
       console.error("Error fetching profile:", err);
     }
   };
 
-  const getBlog  =  async({user_id})=>{
-        try{
-          const res = await axios.post('/blog/blog-search',{author:user_id});
-          setBlogs(res.data.blogs)
-        }catch(err){
-          console.log(err);
-        }
-  }
+  // Fetch blogs
+  const getBlog = async (user_id) => {
+    try {
+      const res = await axios.post("/blog/blog-search", { author: user_id });
+      setBlogs(res.data.blogs);
+    } catch (err) {
+      console.error(err);
+    }
+  };
 
+  // Reset blog state
+  const restBlogState = () => {
+    setBlogs([]);
+  };
 
+  // Load profile when username changes
   useEffect(() => {
-    if (username) fetchUser();
-    getBlog(user.id)
+    const loadProfileAndBlogs = async () => {
+      restBlogState();
+      if (username) {
+        await fetchUser();
+      }
+    };
+    loadProfileAndBlogs();
   }, [username]);
-  console.log(profile)
 
- if (!profile) return (
-  <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
-    <div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
-  </div>
-);
- 
+  // Fetch blogs when profile is ready
+  useEffect(() => {
+    if (profile?._id) {
+      getBlog(profile._id);
+    }
+  }, [profile]);
 
-    const {
-  personalInfo: { username: uName, fullName, profile_img, bio },
-  account_info: { total_posts, total_reads },
-  social_links: { facebook, github, instagram, twitter, website, youtube },
-  joinedAt
-} = profile;
+  // Loader
+  if (!profile)
+    return (
+      <div className="flex items-center justify-center min-h-[calc(100vh-80px)]">
+        <div className="w-10 h-10 border-4 border-black border-t-transparent rounded-full animate-spin"></div>
+      </div>
+    );
 
+  // Destructure profile safely
+  const {
+    personalInfo: { username: uName, fullName, profile_img, bio },
+    account_info: { total_posts, total_reads },
+    social_links: { facebook, github, instagram, twitter, website, youtube },
+    joinedAt,
+  } = profile;
 
   return (
     <>
-      <section className="min-h-[calc(100vh-80px)] md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12">
+      <section className="min-h-[calc(100vh-80px)] md:mr-30 md:flex flex-row-reverse items-start gap-5 min-[1100px]:gap-12">
         <div className="flex flex-col max-md:items-center gap-5 min-w-[250px]">
             <img src={profile_img} className=" w-48 h-48 bg-gray-100 rounded-full md:w-32 md:h-32 mt-4"/>
             <h1 className=" text-2xl font-medium">@{uName}</h1>
@@ -130,4 +149,4 @@ export const ProfilePage = () => {
       </section>
     </>
   );
-};
+}; 

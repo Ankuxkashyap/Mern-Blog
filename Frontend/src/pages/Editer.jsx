@@ -1,4 +1,4 @@
-import { data, Link, useNavigate } from "react-router-dom";
+import { Link, useNavigate, useParams } from "react-router-dom";
 import { motion } from "framer-motion";
 import defaultBanner from "../assets/blogBanner.png";
 import { useEffect, useRef } from "react";
@@ -15,16 +15,71 @@ import toast from "react-hot-toast";
 import "../editor.css";
 import { useBlogStore } from "../store/blog";
 
+const normalizeContent = (content) => {
+  if (!content || !Array.isArray(content.blocks)) {
+    return { time: Date.now(), blocks: [], version: "2.27.0" };
+  }
+
+  const validBlocks = content.blocks.map((block, idx) => {
+    if (!block || !block.type || !block.data) {
+      return {
+        id: `block-${idx}`,
+        type: "paragraph",
+        data: { text: "" },
+      };
+    }
+
+    if (block.type === "paragraph" && !block.data.text) {
+      return {
+        ...block,
+        data: { text: "" },
+      };
+    }
+
+    return block;
+  });
+
+  return {
+    time: content.time || Date.now(),
+    blocks: validBlocks,
+    version: content.version || "2.27.0",
+  };
+};
+
 const Editer = () => {
-  const { banner, setBanner, setContent, setTitle, content, title } = useBlogStore();
+  const { id: blog_id } = useParams();
+  const {
+    banner,
+    setBanner,
+    setContent,
+    setTitle,
+    content,
+    title,
+    fetchBlogById,
+  } = useBlogStore();
   const editorRef = useRef(null);
   const navigate = useNavigate();
 
+  
   useEffect(() => {
     if (!banner) setBanner(defaultBanner);
   }, [banner, setBanner]);
 
-  const handelBannerUplode = async (e) => {
+  
+  useEffect(() => {
+    if (blog_id) {
+      fetchBlogById({ blog_id }).then((res) => {
+        if (res?.content) {
+          const safeContent = normalizeContent(res.content);
+          setContent(safeContent);
+          setTitle(res.title || "");
+          setBanner(res.banner || defaultBanner);
+        }
+      });
+    }
+  }, [blog_id, fetchBlogById, setContent, setTitle, setBanner]);
+
+  const handleBannerUpload = async (e) => {
     const img = e.target.files[0];
     if (!img) return;
 
@@ -32,11 +87,11 @@ const Editer = () => {
     formData.append("image", img);
 
     try {
-      toast.loading("Uploading...");
+      const toastId = toast.loading("Uploading...");
       const res = await axios.post("/blog/uplode-banner", formData, {
         headers: { "Content-Type": "multipart/form-data" },
       });
-      toast.dismiss();
+      toast.dismiss(toastId);
       if (res.data.success) {
         toast.success("Uploaded 👍");
         setBanner(res.data.file.url);
@@ -48,14 +103,16 @@ const Editer = () => {
     }
   };
 
-  const handelTiltleChange = (e) => {
+  const handleTitleChange = (e) => {
     const input = e.target;
-    input.style.height = "auto";
-    input.style.height = input.scrollHeight + "px";
+    requestAnimationFrame(() => {
+      input.style.height = "auto";
+      input.style.height = input.scrollHeight + "px";
+    });
     setTitle(input.value);
   };
 
-  const handelTiltlekeyDown = (e) => {
+  const handleTitleKeyDown = (e) => {
     if (e.key === "Enter") {
       e.preventDefault();
     }
@@ -73,7 +130,7 @@ const Editer = () => {
     }
 
     if (!content || !content.blocks || content.blocks.length === 0) {
-      toast.error("Content cannot be empty");
+      toast.error("Content can't be empty");
       return;
     }
 
@@ -81,59 +138,76 @@ const Editer = () => {
     navigate("/preview");
   };
 
+  
   useEffect(() => {
-    const editor = new EditorJS({
-      holder: "textEditor",
-      placeholder: "Let's write an awesome story",
-      tools: {
-        embed: Embed,
-        header: {
-          class: Header,
-          config: {
-            placeholder: "Type Heading...",
-            levels: [2, 3, 4],
-            defaultLevel: 2,
+    if (!editorRef.current) {
+      const editor = new EditorJS({
+        holder: "textEditor",
+        placeholder: "Let's write an awesome story",
+        tools: {
+          embed: Embed,
+          header: {
+            class: Header,
+            config: {
+              placeholder: "Type Heading...",
+              levels: [2, 3, 4],
+              defaultLevel: 2,
+            },
           },
-        },
-        list: { class: List, inlineToolbar: true },
-        quote: { class: Quote, inlineToolbar: true },
-        marker: Marker,
-        inlineCode: InlineCode,
-        image: {
-          class: ImageTool,
-          config: {
-            uploader: {
-              async uploadByFile(file) {
-                const formData = new FormData();
-                formData.append("image", file);
-                try {
-                  const res = await axios.post("/blog/uplode-banner", formData, {
-                    headers: { "Content-Type": "multipart/form-data" },
-                  });
-                  if (res.data.success) {
-                    return { success: 1, file: { url: res.data.file.url } };
+          list: { class: List, inlineToolbar: true },
+          quote: { class: Quote, inlineToolbar: true },
+          marker: Marker,
+          inlineCode: InlineCode,
+          image: {
+            class: ImageTool,
+            config: {
+              uploader: {
+                async uploadByFile(file) {
+                  const formData = new FormData();
+                  formData.append("image", file);
+                  try {
+                    const res = await axios.post("/blog/uplode-banner", formData, {
+                      headers: { "Content-Type": "multipart/form-data" },
+                    });
+                    if (res.data.success) {
+                      return { success: 1, file: { url: res.data.file.url } };
+                    }
+                  } catch (err) {
+                    console.error("Image upload failed:", err);
+                    return { success: 0 };
                   }
-                } catch (err) {
-                  console.error("Image upload failed:", err);
-                  return { success: 0 };
-                }
+                },
               },
             },
           },
         },
-      },
-      data: content && content.blocks && content.blocks.length > 0 ? content : { blocks: [] },
-      onChange: async () => {
-        const data = await editor.save();
-        setContent(data);
-      },
-    });
+        data: { blocks: [] }, 
+        async onChange() {
+          const data = await editor.save();
+          setContent(normalizeContent(data));
+        },
+      });
 
-    editorRef.current = editor;
+      editorRef.current = editor;
+    }
+
     return () => {
+      editorRef.current?.destroy?.();
       editorRef.current = null;
     };
   }, [setContent]);
+
+  
+  useEffect(() => {
+  if (editorRef.current && content && content.blocks?.length >= 0) {
+    editorRef.current.isReady
+      .then(() => {
+        editorRef.current.render(normalizeContent(content));
+      })
+      .catch((err) => console.error("Editor render error:", err));
+  }
+}, [content]);
+
 
   return (
     <>
@@ -148,9 +222,6 @@ const Editer = () => {
           >
             Publish
           </button>
-          {/* <button className="whitespace-nowrap bg-gray-200 text-black rounded-full px-3 py-1 md:mr-5 text-lg items-center gap-2 ml-2 cursor-pointer">
-            Save Draft
-          </button> */}
         </div>
       </nav>
 
@@ -165,7 +236,7 @@ const Editer = () => {
                   hidden
                   accept=".png,.jpg,.jpeg"
                   id="uploadBanner"
-                  onChange={handelBannerUplode}
+                  onChange={handleBannerUpload}
                 />
               </label>
             </div>
@@ -173,9 +244,9 @@ const Editer = () => {
             <textarea
               className="w-full text-4xl h-20 font-medium outline-none resize-none mt-10 leading-tight placeholder:opacity-40"
               placeholder="Blog Title"
-              value={title}   
-              onChange={handelTiltleChange}
-              onKeyDown={handelTiltlekeyDown}
+              value={title}
+              onChange={handleTitleChange}
+              onKeyDown={handleTitleKeyDown}
             ></textarea>
 
             <hr className="w-full opacity-10 my-5" />
